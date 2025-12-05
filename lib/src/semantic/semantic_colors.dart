@@ -139,6 +139,8 @@ class OpacityTokens {
   final double focus;
   final double active;
   final double overlay;
+  final double hoverDark;
+  final double pressedDark;
 
   const OpacityTokens({
     required this.disabled,
@@ -146,6 +148,8 @@ class OpacityTokens {
     required this.focus,
     required this.active,
     required this.overlay,
+    required this.hoverDark,
+    required this.pressedDark,
   });
 }
 

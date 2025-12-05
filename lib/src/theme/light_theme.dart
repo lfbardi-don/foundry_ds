@@ -81,7 +81,15 @@ class FoundryLightTheme implements FoundryThemeData {
           ),
           info: StatusColor(bg: FColors.blue50, fg: FColors.blue600, border: FColors.blue500, main: FColors.blue500),
         ),
-        opacity: OpacityTokens(disabled: 0.5, hover: 0.04, focus: 0.12, active: 0.12, overlay: 0.4),
+        opacity: OpacityTokens(
+          disabled: 0.5,
+          hover: 0.04,
+          focus: 0.12,
+          active: 0.12,
+          overlay: 0.4,
+          hoverDark: 0.85,
+          pressedDark: 0.7,
+        ),
         state: StateColors(
           hover: StateColor(bg: FColors.zinc50, fg: FColors.zinc900),
           active: StateColor(bg: FColors.zinc100, fg: FColors.zinc950),

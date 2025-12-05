@@ -186,9 +186,9 @@ class FoundryButton extends StatelessWidget {
       case FoundryButtonVariant.secondary:
         return _ButtonColors(
           background: isPressed
-              ? colors.state.active.bg!
+              ? colors.bg.inverted.withValues(alpha: colors.opacity.pressedDark)
               : isHovered
-              ? colors.state.hover.bg!
+              ? colors.bg.inverted.withValues(alpha: colors.opacity.hoverDark)
               : colors.button.secondary.bg,
           foreground: colors.button.secondary.fg,
           border: colors.button.secondary.border,
@@ -208,14 +208,18 @@ class FoundryButton extends StatelessWidget {
           background: isPressed
               ? colors.state.active.bg!
               : isHovered
-              ? colors.state.hover.bg!
+              ? colors.bg.emphasis
               : colors.bg.transparent,
           foreground: colors.fg.primary,
           border: colors.bg.transparent,
         );
       case FoundryButtonVariant.destructive:
         return _ButtonColors(
-          background: isPressed || isHovered ? colors.status.negative.main : colors.status.negative.bg,
+          background: isPressed
+              ? colors.status.negative.main.withValues(alpha: colors.opacity.pressedDark)
+              : isHovered
+              ? colors.status.negative.main
+              : colors.status.negative.bg,
           foreground: isPressed || isHovered ? colors.fg.inverted : colors.status.negative.fg,
           border: colors.status.negative.border,
         );
