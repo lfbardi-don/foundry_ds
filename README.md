@@ -10,12 +10,12 @@ A comprehensive, production-grade Flutter design system inspired by OpenAI's aes
 
 ## Features
 
-- 🎨 **Design Tokens**: Standardized colors, spacing, typography, and radius.
-- 🧱 **Primitives**: Layout abstractions like `FoundryVStack`, `FoundryHStack`, and `FoundryGap`.
-- 🧩 **Components**: Production-ready buttons, inputs, cards, and more.
-- 📱 **Responsive**: Built-in responsiveness logic with `FoundryResponsive`.
-- 🌗 **Theming**: First-class support for light and dark modes.
-- ♿ **Accessible**: Semantic colors and typography.
+🎨 **Design Tokens**: Standardized colors, spacing, typography, and radius.
+🧱 **Primitives**: Layout abstractions like `FoundryVStack`, `FoundryHStack`, and `FoundryGap`.
+🧩 **Components**: Production-ready buttons, inputs, cards, and more.
+📱 **Responsive**: Built-in responsiveness logic with `FoundryResponsive`.
+🌗 **Theming**: First-class support for light and dark modes.
+♿ **Accessible**: Semantic colors and typography.
 
 ## Table of Contents
 
@@ -39,6 +39,10 @@ dependencies:
   foundry_ds:
     path: ../foundry_ds  # or your path
 ```
+
+## Architecture
+
+![Foundry DS Architecture](assets/foundry_architecture.png)
 
 ## Quick Start
 
@@ -202,10 +206,6 @@ FRadius.lg // 12.0
 // Breakpoints: sm(640), md(768), lg(1024), xl(1280), xxl(1536)
 FLayout.lg // 1024.0
 ```
-
-## Architecture
-
-![Foundry DS Architecture](assets/foundry_architecture.png)
 
 ## License
 
