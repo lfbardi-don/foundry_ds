@@ -2,35 +2,22 @@ import 'package:flutter/widgets.dart';
 import 'package:foundry_ds/src/theme/theme.dart';
 import 'package:foundry_ds/src/foundations/foundations.dart';
 
-/// Provides consistent hover and focus states for interactive components.
+/// Provides consistent hover, focus, and pressed states for interactive components.
 ///
-/// Wraps any widget to add proper hover highlighting and keyboard focus
-/// handling for web and desktop accessibility.
-///
-/// Example:
 /// ```dart
 /// FoundryInteractive(
 ///   onTap: _handleTap,
-///   builder: (isHovered, isFocused) => Container(
-///     color: isHovered ? colors.state.hover.bg : colors.bg.canvas,
+///   builder: (isHovered, isFocused, isPressed) => Container(
+///     color: isPressed ? colors.state.active.bg : isHovered ? colors.state.hover.bg : colors.bg.canvas,
 ///     child: Text('Interactive'),
 ///   ),
 /// )
 /// ```
 class FoundryInteractive extends StatefulWidget {
-  /// Builder that receives hover and focus states.
-  final Widget Function(bool isHovered, bool isFocused) builder;
-
-  /// Called when the widget is tapped/clicked.
+  final Widget Function(bool isHovered, bool isFocused, bool isPressed) builder;
   final VoidCallback? onTap;
-
-  /// Whether the widget is enabled for interaction.
   final bool enabled;
-
-  /// Custom cursor for hover state.
   final MouseCursor? cursor;
-
-  /// Whether this widget can receive focus.
   final bool canRequestFocus;
 
   const FoundryInteractive({
@@ -49,6 +36,7 @@ class FoundryInteractive extends StatefulWidget {
 class _FoundryInteractiveState extends State<FoundryInteractive> {
   bool _isHovered = false;
   bool _isFocused = false;
+  bool _isPressed = false;
 
   void _handleHoverChange(bool isHovered) {
     if (widget.enabled) {
@@ -62,6 +50,24 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
     }
   }
 
+  void _handleTapDown(TapDownDetails details) {
+    if (widget.enabled) {
+      setState(() => _isPressed = true);
+    }
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    if (widget.enabled) {
+      setState(() => _isPressed = false);
+    }
+  }
+
+  void _handleTapCancel() {
+    if (widget.enabled) {
+      setState(() => _isPressed = false);
+    }
+  }
+
   void _handleTap() {
     if (widget.enabled && widget.onTap != null) {
       widget.onTap!();
@@ -72,6 +78,7 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
   Widget build(BuildContext context) {
     final effectiveHovered = widget.enabled && _isHovered;
     final effectiveFocused = widget.enabled && _isFocused;
+    final effectivePressed = widget.enabled && _isPressed;
 
     return Focus(
       canRequestFocus: widget.enabled && widget.canRequestFocus,
@@ -82,8 +89,11 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
         onExit: (_) => _handleHoverChange(false),
         child: GestureDetector(
           onTap: widget.enabled ? _handleTap : null,
+          onTapDown: widget.enabled ? _handleTapDown : null,
+          onTapUp: widget.enabled ? _handleTapUp : null,
+          onTapCancel: widget.enabled ? _handleTapCancel : null,
           behavior: HitTestBehavior.opaque,
-          child: widget.builder(effectiveHovered, effectiveFocused),
+          child: widget.builder(effectiveHovered, effectiveFocused, effectivePressed),
         ),
       ),
     );
