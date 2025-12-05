@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foundry_ds/src/components/switch/foundry_switch.dart';
 import 'package:foundry_ds/src/theme/theme.dart';
-import 'package:foundry_ds/src/theme/light_theme.dart';
 
 void main() {
   group('FoundrySwitch', () {

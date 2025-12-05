@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foundry_ds/src/components/select/foundry_select.dart';
 import 'package:foundry_ds/src/theme/theme.dart';
-import 'package:foundry_ds/src/theme/light_theme.dart';
 
 void main() {
   group('FoundrySelect', () {
