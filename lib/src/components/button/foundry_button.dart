@@ -202,7 +202,7 @@ class FoundryButton extends StatelessWidget {
           background: isPressed
               ? colors.state.active.bg!
               : isHovered
-              ? colors.bg.emphasis
+              ? colors.state.hover.bg!
               : colors.bg.transparent,
           foreground: colors.fg.primary,
           border: colors.bg.transparent,
