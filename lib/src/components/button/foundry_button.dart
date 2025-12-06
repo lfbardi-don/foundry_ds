@@ -99,9 +99,14 @@ class FoundryButton extends StatelessWidget {
         final buttonColors = _resolveColors(colors, isHovered, isPressed);
 
         final shouldAnimate = buttonColors.background != colors.bg.transparent && buttonColors.background.a > 0;
+        final duration = shouldAnimate ? motion.fast : Duration.zero;
+
+        print(
+          '[ANIMATION] bg=${buttonColors.background}, transparent=${colors.bg.transparent}, a=${buttonColors.background.a}, shouldAnimate=$shouldAnimate, duration=$duration',
+        );
 
         return AnimatedContainer(
-          duration: shouldAnimate ? motion.fast : Duration.zero,
+          duration: duration,
           curve: motion.easeInOut,
           padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
           decoration: BoxDecoration(
@@ -200,15 +205,18 @@ class FoundryButton extends StatelessWidget {
           border: isPressed || isHovered ? colors.border.strong : colors.border.base,
         );
       case FoundryButtonVariant.ghost:
-        return _ButtonColors(
-          background: isPressed
-              ? colors.state.active.bg!
-              : isHovered
-              ? colors.state.hover.bg!
-              : colors.bg.transparent,
-          foreground: colors.fg.primary,
-          border: colors.bg.transparent,
-        );
+        final bg = isPressed
+            ? colors.state.active.bg!
+            : isHovered
+            ? colors.state.hover.bg!
+            : colors.bg.transparent;
+        final state = isPressed
+            ? 'PRESSED'
+            : isHovered
+            ? 'HOVERED'
+            : 'DEFAULT';
+        print('[GHOST] state=$state, color=$bg');
+        return _ButtonColors(background: bg, foreground: colors.fg.primary, border: colors.bg.transparent);
       case FoundryButtonVariant.destructive:
         return _ButtonColors(
           background: isPressed
