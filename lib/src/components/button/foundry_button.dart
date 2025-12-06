@@ -198,15 +198,13 @@ class FoundryButton extends StatelessWidget {
           border: isPressed || isHovered ? colors.border.strong : colors.border.base,
         );
       case FoundryButtonVariant.ghost:
-        return _ButtonColors(
-          background: isPressed
-              ? colors.state.active.bg!
-              : isHovered
-              ? colors.state.hover.bg!
-              : colors.bg.transparent,
-          foreground: colors.fg.primary,
-          border: colors.bg.transparent,
-        );
+        final ghostBg = isPressed
+            ? colors.state.active.bg!
+            : isHovered
+            ? colors.state.hover.bg!
+            : colors.bg.transparent;
+        print('[Ghost Button] isHovered: $isHovered, isPressed: $isPressed, bg: $ghostBg');
+        return _ButtonColors(background: ghostBg, foreground: colors.fg.primary, border: colors.bg.transparent);
       case FoundryButtonVariant.destructive:
         return _ButtonColors(
           background: isPressed

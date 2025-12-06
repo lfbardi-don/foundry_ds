@@ -40,6 +40,7 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
 
   void _handleHoverChange(bool isHovered) {
     if (widget.enabled) {
+      print('[FoundryInteractive] Hover changed: $isHovered (pressed: $_isPressed)');
       setState(() => _isHovered = isHovered);
     }
   }
@@ -52,18 +53,21 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
 
   void _handleTapDown(TapDownDetails details) {
     if (widget.enabled) {
+      print('[FoundryInteractive] TapDown (hover: $_isHovered, pressed: $_isPressed -> true)');
       setState(() => _isPressed = true);
     }
   }
 
   void _handleTapUp(TapUpDetails details) {
     if (widget.enabled) {
+      print('[FoundryInteractive] TapUp (hover: $_isHovered, pressed: $_isPressed -> false)');
       setState(() => _isPressed = false);
     }
   }
 
   void _handleTapCancel() {
     if (widget.enabled) {
+      print('[FoundryInteractive] TapCancel (hover: $_isHovered, pressed: $_isPressed -> false)');
       setState(() => _isPressed = false);
     }
   }
@@ -79,6 +83,10 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
     final effectiveHovered = widget.enabled && _isHovered;
     final effectiveFocused = widget.enabled && _isFocused;
     final effectivePressed = widget.enabled && _isPressed;
+
+    print(
+      '[FoundryInteractive BUILD] Raw: hover=$_isHovered, focus=$_isFocused, press=$_isPressed | Effective: hover=$effectiveHovered, focus=$effectiveFocused, press=$effectivePressed',
+    );
 
     return Focus(
       canRequestFocus: widget.enabled && widget.canRequestFocus,
