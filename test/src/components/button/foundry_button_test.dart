@@ -92,37 +92,6 @@ void main() {
       });
     });
 
-    group('onLongPress', () {
-      testWidgets('calls onLongPress when long pressed', (tester) async {
-        var longPressed = false;
-        await tester.pumpWidget(
-          buildTestWidget(
-            FoundryButton(onPressed: () {}, onLongPress: () => longPressed = true, label: 'Long Press Me'),
-          ),
-        );
-
-        await tester.longPress(find.byType(FoundryButton));
-        expect(longPressed, isTrue);
-      });
-
-      testWidgets('does not call onLongPress when disabled', (tester) async {
-        var longPressed = false;
-        await tester.pumpWidget(
-          buildTestWidget(
-            FoundryButton(
-              onPressed: () {},
-              onLongPress: () => longPressed = true,
-              isDisabled: true,
-              label: 'Long Press Me',
-            ),
-          ),
-        );
-
-        await tester.longPress(find.byType(FoundryButton));
-        expect(longPressed, isFalse);
-      });
-    });
-
     group('accessibility', () {
       testWidgets('wraps button with Semantics widget', (tester) async {
         await tester.pumpWidget(buildTestWidget(FoundryButton(onPressed: () {}, label: 'Submit')));

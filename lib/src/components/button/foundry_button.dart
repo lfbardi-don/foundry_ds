@@ -38,7 +38,6 @@ class _SizeConfig {
 /// ```
 class FoundryButton extends StatelessWidget {
   final VoidCallback? onPressed;
-  final VoidCallback? onLongPress;
   final String? label;
   final Widget? icon;
   final FoundryButtonVariant variant;
@@ -53,7 +52,6 @@ class FoundryButton extends StatelessWidget {
   const FoundryButton({
     super.key,
     required this.onPressed,
-    this.onLongPress,
     this.label,
     this.icon,
     this.variant = FoundryButtonVariant.primary,
@@ -71,7 +69,6 @@ class FoundryButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     required this.tooltip,
-    this.onLongPress,
     this.variant = FoundryButtonVariant.ghost,
     this.size = FoundryButtonSize.medium,
     this.isLoading = false,
@@ -98,7 +95,6 @@ class FoundryButton extends StatelessWidget {
     Widget button = FoundryInteractive(
       enabled: _isEnabled,
       onTap: _isEnabled ? () => _handleTap() : null,
-      onLongPress: _isEnabled ? onLongPress : null,
       builder: (isHovered, isFocused, isPressed) {
         final buttonColors = _resolveColors(colors, isHovered, isPressed);
 
