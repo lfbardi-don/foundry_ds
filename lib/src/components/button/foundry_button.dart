@@ -255,6 +255,12 @@ class FoundryButton extends StatelessWidget {
         return [
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SizeTransition(sizeFactor: animation, axis: Axis.horizontal, axisAlignment: -1, child: child),
+              );
+            },
             child: SizedBox(
               key: const ValueKey('loading'),
               width: sizeConfig.iconSize,
@@ -292,6 +298,12 @@ class FoundryButton extends StatelessWidget {
         return [
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SizeTransition(sizeFactor: animation, axis: Axis.horizontal, axisAlignment: -1, child: child),
+              );
+            },
             child: Row(key: const ValueKey('content'), mainAxisSize: MainAxisSize.min, children: content),
           ),
         ];
