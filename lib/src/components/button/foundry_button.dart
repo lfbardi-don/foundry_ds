@@ -98,15 +98,40 @@ class FoundryButton extends StatelessWidget {
       builder: (isHovered, isFocused, isPressed) {
         final buttonColors = _resolveColors(colors, isHovered, isPressed);
 
-        final shouldAnimate = buttonColors.background != colors.bg.transparent && buttonColors.background.a > 0;
-        final duration = shouldAnimate ? motion.fast : Duration.zero;
+        // Ghost buttons: animate opacity for smooth fade, not color (prevents interpolation artifacts)
+        // Other variants: animate background color normally
+        final isGhost = variant == FoundryButtonVariant.ghost;
+        final shouldAnimateColor =
+            !isGhost && buttonColors.background != colors.bg.transparent && buttonColors.background.a > 0;
 
-        print(
-          '[ANIMATION] bg=${buttonColors.background}, transparent=${colors.bg.transparent}, a=${buttonColors.background.a}, shouldAnimate=$shouldAnimate, duration=$duration',
+        print('[ANIMATION] variant=$variant, isGhost=$isGhost, shouldAnimateColor=$shouldAnimateColor');
+
+        final container = Container(
+          padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
+          decoration: BoxDecoration(
+            color: buttonColors.background,
+            border: Border.all(
+              color: isFocused ? colors.border.focus : buttonColors.border,
+              width: isFocused ? FBorderWidth.medium : FBorderWidth.hairline,
+            ),
+            borderRadius: BorderRadius.circular(radius.md),
+          ),
+          child: Row(
+            mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _buildContent(buttonColors.foreground, sizeConfig),
+          ),
         );
 
+        // Ghost variant: animate opacity for smooth hover effect
+        if (isGhost) {
+          final opacity = (isHovered || isPressed) ? 1.0 : 0.0;
+          return AnimatedOpacity(duration: motion.fast, curve: motion.easeInOut, opacity: opacity, child: container);
+        }
+
+        // Other variants: animate color
         return AnimatedContainer(
-          duration: duration,
+          duration: shouldAnimateColor ? motion.fast : Duration.zero,
           curve: motion.easeInOut,
           padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
           decoration: BoxDecoration(
