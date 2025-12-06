@@ -37,37 +37,46 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
   bool _isHovered = false;
   bool _isFocused = false;
   bool _isPressed = false;
+  static int _frameCounter = 0;
+
+  String _timestamp() => DateTime.now().toIso8601String().substring(11, 23);
 
   void _handleHoverChange(bool isHovered) {
     if (widget.enabled) {
-      print('[FoundryInteractive] Hover changed: $isHovered (pressed: $_isPressed)');
+      _frameCounter++;
+      print('[$_frameCounter @ ${_timestamp()}] [HOVER] $_isHovered → $isHovered (pressed: $_isPressed)');
       setState(() => _isHovered = isHovered);
     }
   }
 
   void _handleFocusChange(bool isFocused) {
     if (widget.enabled) {
+      _frameCounter++;
+      print('[$_frameCounter @ ${_timestamp()}] [FOCUS] $_isFocused → $isFocused');
       setState(() => _isFocused = isFocused);
     }
   }
 
   void _handleTapDown(TapDownDetails details) {
     if (widget.enabled) {
-      print('[FoundryInteractive] TapDown (hover: $_isHovered, pressed: $_isPressed -> true)');
+      _frameCounter++;
+      print('[$_frameCounter @ ${_timestamp()}] [TAP_DOWN] pressed: $_isPressed → true (hover: $_isHovered)');
       setState(() => _isPressed = true);
     }
   }
 
   void _handleTapUp(TapUpDetails details) {
     if (widget.enabled) {
-      print('[FoundryInteractive] TapUp (hover: $_isHovered, pressed: $_isPressed -> false)');
+      _frameCounter++;
+      print('[$_frameCounter @ ${_timestamp()}] [TAP_UP] pressed: $_isPressed → false (hover: $_isHovered)');
       setState(() => _isPressed = false);
     }
   }
 
   void _handleTapCancel() {
     if (widget.enabled) {
-      print('[FoundryInteractive] TapCancel (hover: $_isHovered, pressed: $_isPressed -> false)');
+      _frameCounter++;
+      print('[$_frameCounter @ ${_timestamp()}] [TAP_CANCEL] pressed: $_isPressed → false (hover: $_isHovered)');
       setState(() => _isPressed = false);
     }
   }
@@ -85,7 +94,7 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
     final effectivePressed = widget.enabled && _isPressed;
 
     print(
-      '[FoundryInteractive BUILD] Raw: hover=$_isHovered, focus=$_isFocused, press=$_isPressed | Effective: hover=$effectiveHovered, focus=$effectiveFocused, press=$effectivePressed',
+      '[$_frameCounter @ ${_timestamp()}] [BUILD] hover=$_isHovered, focus=$_isFocused, press=$_isPressed → Effective: H=$effectiveHovered, F=$effectiveFocused, P=$effectivePressed',
     );
 
     return Focus(
