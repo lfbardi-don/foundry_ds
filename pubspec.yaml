@@ -1,6 +1,6 @@
 name: foundry_ds
 description: "A production-grade Flutter design system inspired by OpenAI's aesthetic. Provides comprehensive tokens, semantic layers, and reusable components."
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/yourusername/foundry_ds
 repository: https://github.com/yourusername/foundry_ds
 
