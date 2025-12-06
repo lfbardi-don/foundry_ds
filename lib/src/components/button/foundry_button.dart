@@ -249,24 +249,70 @@ class FoundryButton extends StatelessWidget {
   }
 
   List<Widget> _buildContent(Color foreground, _SizeConfig sizeConfig) {
+    // Animated loading: use AnimatedSwitcher to transition between states
+    if (animateLoading) {
+      if (isLoading) {
+        return [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: SizedBox(
+              key: const ValueKey('loading'),
+              width: sizeConfig.iconSize,
+              height: sizeConfig.iconSize,
+              child: CircularProgressIndicator(
+                strokeWidth: FBorderWidth.medium,
+                valueColor: AlwaysStoppedAnimation<Color>(foreground),
+              ),
+            ),
+          ),
+        ];
+      } else {
+        // Not loading - show icon and/or label
+        final content = <Widget>[];
+        if (icon != null) {
+          content.add(
+            IconTheme(
+              data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
+              child: icon!,
+            ),
+          );
+          if (label != null) content.add(FoundryGap.sm());
+        }
+        if (label != null) {
+          content.add(
+            Text(
+              label!,
+              style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          );
+        }
+
+        return [
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Row(key: const ValueKey('content'), mainAxisSize: MainAxisSize.min, children: content),
+          ),
+        ];
+      }
+    }
+
+    // Non-animated loading: original behavior
     final widgets = <Widget>[];
 
     if (isLoading) {
-      final spinner = SizedBox(
-        width: sizeConfig.iconSize,
-        height: sizeConfig.iconSize,
-        child: CircularProgressIndicator(
-          strokeWidth: FBorderWidth.medium,
-          valueColor: AlwaysStoppedAnimation<Color>(foreground),
+      widgets.add(
+        SizedBox(
+          width: sizeConfig.iconSize,
+          height: sizeConfig.iconSize,
+          child: CircularProgressIndicator(
+            strokeWidth: FBorderWidth.medium,
+            valueColor: AlwaysStoppedAnimation<Color>(foreground),
+          ),
         ),
       );
-
-      if (animateLoading) {
-        widgets.add(AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: spinner));
-      } else {
-        widgets.add(spinner);
-        if (label != null) widgets.add(FoundryGap.sm());
-      }
+      if (label != null) widgets.add(FoundryGap.sm());
     } else if (icon != null) {
       widgets.add(
         IconTheme(
@@ -277,19 +323,15 @@ class FoundryButton extends StatelessWidget {
       if (label != null) widgets.add(FoundryGap.sm());
     }
 
-    if (label != null && !(isLoading && animateLoading)) {
-      final text = Text(
-        label!,
-        style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
+    if (label != null) {
+      widgets.add(
+        Text(
+          label!,
+          style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
       );
-
-      if (animateLoading) {
-        widgets.add(AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: text));
-      } else {
-        widgets.add(text);
-      }
     }
 
     return widgets;
