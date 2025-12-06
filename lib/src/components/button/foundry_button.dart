@@ -10,6 +10,8 @@ enum FoundryButtonVariant { primary, secondary, outline, ghost, destructive }
 
 enum FoundryButtonSize { small, medium, large }
 
+enum FoundryButtonLoadingMode { inline, compact }
+
 class _ButtonColors {
   final Color background;
   final Color foreground;
@@ -30,10 +32,25 @@ class _SizeConfig {
 /// A [FoundryButton] component with multiple [FoundryButtonVariant], [FoundryButtonSize], and states.
 ///
 /// Supports: primary, secondary, outline, ghost, and destructive variants.
-/// Features: loading state, icon support, haptic feedback, accessibility.
+/// Features: loading states, icon support, haptic feedback, accessibility.
+///
+/// **Loading Modes:**
+/// - [FoundryButtonLoadingMode.inline]: Standard loading (spinner + text, no resize)
+/// - [FoundryButtonLoadingMode.compact]: Premium animated loading (fades text, animates to spinner-only)
 ///
 /// ```dart
-/// FoundryButton(label: 'Submit', onPressed: () {})
+/// // Standard inline loading (default)
+/// FoundryButton(label: 'Submit', onPressed: () {}, isLoading: true)
+///
+/// // Premium compact loading with animation
+/// FoundryButton(
+///   label: 'Submit',
+///   onPressed: () {},
+///   isLoading: true,
+///   loadingMode: FoundryButtonLoadingMode.compact,
+/// )
+///
+/// // Icon button
 /// FoundryButton.icon(icon: Icon(Icons.add), onPressed: () {}, tooltip: 'Add')
 /// ```
 class FoundryButton extends StatelessWidget {
@@ -46,7 +63,7 @@ class FoundryButton extends StatelessWidget {
   final bool isDisabled;
   final bool expanded;
   final bool enableHaptics;
-  final bool animateLoading;
+  final FoundryButtonLoadingMode loadingMode;
   final String? semanticLabel;
   final String? tooltip;
 
@@ -61,7 +78,7 @@ class FoundryButton extends StatelessWidget {
     this.isDisabled = false,
     this.expanded = false,
     this.enableHaptics = true,
-    this.animateLoading = false,
+    this.loadingMode = FoundryButtonLoadingMode.inline,
     this.semanticLabel,
     this.tooltip,
   }) : assert(label != null || icon != null, 'FoundryButton requires either a label or an icon.');
@@ -76,7 +93,7 @@ class FoundryButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.enableHaptics = true,
-    this.animateLoading = false,
+    this.loadingMode = FoundryButtonLoadingMode.inline,
     this.semanticLabel,
   }) : label = null,
        expanded = false;
@@ -99,22 +116,28 @@ class FoundryButton extends StatelessWidget {
       enabled: _isEnabled,
       onTap: _isEnabled ? () => _handleTap() : null,
       builder: (isHovered, isFocused, isPressed) {
-        final buttonColors = _resolveColors(colors, isHovered, isPressed);
+        final effectiveHovered = (isLoading && loadingMode == FoundryButtonLoadingMode.compact) ? false : isHovered;
+        final effectivePressed = (isLoading && loadingMode == FoundryButtonLoadingMode.compact) ? false : isPressed;
+
+        final buttonColors = _resolveColors(colors, effectiveHovered, effectivePressed);
 
         final shouldAnimateColor =
             variant != FoundryButtonVariant.ghost &&
             buttonColors.background != colors.bg.transparent &&
             buttonColors.background.a > 0;
 
-        return AnimatedContainer(
+        final container = AnimatedContainer(
           duration: shouldAnimateColor ? motion.fast : Duration.zero,
           curve: motion.easeInOut,
           padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
           decoration: BoxDecoration(
             color: buttonColors.background,
-            border: Border.all(
-              color: isFocused ? colors.border.focus : buttonColors.border,
-              width: isFocused ? FBorderWidth.medium : FBorderWidth.hairline,
+            border: Border.fromBorderSide(
+              BorderSide(
+                color: isFocused ? colors.border.focus : buttonColors.border,
+                width: isFocused ? FBorderWidth.medium : FBorderWidth.hairline,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
             ),
             borderRadius: BorderRadius.circular(radius.md),
           ),
@@ -124,6 +147,17 @@ class FoundryButton extends StatelessWidget {
             children: _buildContent(buttonColors.foreground, sizeConfig),
           ),
         );
+
+        if (loadingMode == FoundryButtonLoadingMode.compact) {
+          return AnimatedSize(
+            duration: motion.normal,
+            curve: motion.easeInOut,
+            alignment: Alignment.center,
+            child: container,
+          );
+        }
+
+        return container;
       },
     );
 
@@ -249,68 +283,58 @@ class FoundryButton extends StatelessWidget {
   }
 
   List<Widget> _buildContent(Color foreground, _SizeConfig sizeConfig) {
-    // Animated loading: use AnimatedSwitcher to transition between states
-    if (animateLoading) {
-      if (isLoading) {
-        return [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, animation) {
-              return FadeTransition(
-                opacity: animation,
-                child: SizeTransition(sizeFactor: animation, axis: Axis.horizontal, axisAlignment: -1, child: child),
-              );
-            },
-            child: SizedBox(
-              key: const ValueKey('loading'),
-              width: sizeConfig.iconSize,
-              height: sizeConfig.iconSize,
-              child: CircularProgressIndicator(
-                strokeWidth: FBorderWidth.medium,
-                valueColor: AlwaysStoppedAnimation<Color>(foreground),
-              ),
-            ),
-          ),
-        ];
-      } else {
-        // Not loading - show icon and/or label
-        final content = <Widget>[];
-        if (icon != null) {
-          content.add(
-            IconTheme(
-              data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
-              child: icon!,
-            ),
-          );
-          if (label != null) content.add(FoundryGap.sm());
-        }
-        if (label != null) {
-          content.add(
-            Text(
-              label!,
-              style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          );
-        }
-
-        return [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, animation) {
-              return FadeTransition(
-                opacity: animation,
-                child: SizeTransition(sizeFactor: animation, axis: Axis.horizontal, axisAlignment: -1, child: child),
-              );
-            },
-            child: Row(key: const ValueKey('content'), mainAxisSize: MainAxisSize.min, children: content),
-          ),
-        ];
-      }
+    if (loadingMode == FoundryButtonLoadingMode.compact) {
+      return [
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(scale: animation, child: child),
+            );
+          },
+          child: isLoading
+              ? Center(
+                  key: const ValueKey('loading'),
+                  child: SizedBox(
+                    width: sizeConfig.iconSize,
+                    height: sizeConfig.iconSize,
+                    child: CircularProgressIndicator(
+                      strokeWidth: FBorderWidth.medium,
+                      valueColor: AlwaysStoppedAnimation<Color>(foreground),
+                    ),
+                  ),
+                )
+              : Row(
+                  key: const ValueKey('content'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[
+                      IconTheme(
+                        data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
+                        child: icon!,
+                      ),
+                      if (label != null) FoundryGap.sm(),
+                    ],
+                    if (label != null)
+                      Flexible(
+                        child: Text(
+                          label!,
+                          style: TextStyle(
+                            color: foreground,
+                            fontSize: sizeConfig.fontSize,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                  ],
+                ),
+        ),
+      ];
     }
 
-    // Non-animated loading: original behavior
     final widgets = <Widget>[];
 
     if (isLoading) {
@@ -337,11 +361,13 @@ class FoundryButton extends StatelessWidget {
 
     if (label != null) {
       widgets.add(
-        Text(
-          label!,
-          style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
+        Flexible(
+          child: Text(
+            label!,
+            style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
         ),
       );
     }
