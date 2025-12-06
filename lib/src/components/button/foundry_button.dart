@@ -4,66 +4,60 @@ import 'package:foundry_ds/src/theme/theme.dart';
 import 'package:foundry_ds/src/foundations/foundations.dart';
 import 'package:foundry_ds/src/utils/utils.dart';
 import 'package:foundry_ds/src/components/components.dart';
-import 'package:foundry_ds/src/semantic/semantic.dart';
+
+import '_button_colors.dart';
+import '_button_sizes.dart';
 
 enum FoundryButtonVariant { primary, secondary, outline, ghost, destructive }
 
 enum FoundryButtonSize { small, medium, large }
 
-enum FoundryButtonLoadingMode { inline, compact }
-
-class _ButtonColors {
-  final Color background;
-  final Color foreground;
-  final Color border;
-
-  const _ButtonColors({required this.background, required this.foreground, required this.border});
-}
-
-class _SizeConfig {
-  final EdgeInsetsGeometry padding;
-  final double fontSize;
-  final double iconSize;
-  final double iconPadding;
-
-  const _SizeConfig({required this.padding, required this.fontSize, required this.iconSize, required this.iconPadding});
-}
-
 /// A [FoundryButton] component with multiple [FoundryButtonVariant], [FoundryButtonSize], and states.
 ///
 /// Supports: primary, secondary, outline, ghost, and destructive variants.
-/// Features: loading states, icon support, haptic feedback, accessibility.
-///
-/// **Loading Modes:**
-/// - [FoundryButtonLoadingMode.inline]: Standard loading (spinner + text, no resize)
-/// - [FoundryButtonLoadingMode.compact]: Premium animated loading (fades text, animates to spinner-only)
+/// Features: loading state, icon support (prefix/suffix), haptic feedback, accessibility.
 ///
 /// ```dart
-/// // Standard inline loading (default)
-/// FoundryButton(label: 'Submit', onPressed: () {}, isLoading: true)
+/// // Basic button
+/// FoundryButton(label: 'Submit', onPressed: () {})
 ///
-/// // Premium compact loading with animation
+/// // With prefix and suffix icons
+/// FoundryButton(
+///   label: 'Download',
+///   prefixIcon: Icon(LucideIcons.download),
+///   suffixIcon: Icon(LucideIcons.arrowDown),
+///   onPressed: () {},
+/// )
+///
+/// // With minimum width
+/// FoundryButton(label: 'OK', onPressed: () {}, minWidth: 120)
+///
+/// // Custom loading content
 /// FoundryButton(
 ///   label: 'Submit',
 ///   onPressed: () {},
 ///   isLoading: true,
-///   loadingMode: FoundryButtonLoadingMode.compact,
+///   loadingContent: Text('Submitting...'),
 /// )
 ///
-/// // Icon button
+/// // Icon-only button
 /// FoundryButton.icon(icon: Icon(Icons.add), onPressed: () {}, tooltip: 'Add')
 /// ```
 class FoundryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String? label;
   final Widget? icon;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final FoundryButtonVariant variant;
   final FoundryButtonSize size;
   final bool isLoading;
   final bool isDisabled;
   final bool expanded;
   final bool enableHaptics;
-  final FoundryButtonLoadingMode loadingMode;
+  final double? minWidth;
+  final Widget? loadingContent;
+
   final String? semanticLabel;
   final String? tooltip;
 
@@ -72,16 +66,22 @@ class FoundryButton extends StatelessWidget {
     required this.onPressed,
     this.label,
     this.icon,
+    this.prefixIcon,
+    this.suffixIcon,
     this.variant = FoundryButtonVariant.primary,
     this.size = FoundryButtonSize.medium,
     this.isLoading = false,
     this.isDisabled = false,
     this.expanded = false,
     this.enableHaptics = true,
-    this.loadingMode = FoundryButtonLoadingMode.inline,
+    this.minWidth,
+    this.loadingContent,
     this.semanticLabel,
     this.tooltip,
-  }) : assert(label != null || icon != null, 'FoundryButton requires either a label or an icon.');
+  }) : assert(
+         label != null || icon != null || prefixIcon != null || suffixIcon != null,
+         'FoundryButton requires at least a label or icon.',
+       );
 
   const FoundryButton.icon({
     super.key,
@@ -93,13 +93,19 @@ class FoundryButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.enableHaptics = true,
-    this.loadingMode = FoundryButtonLoadingMode.inline,
+    this.minWidth,
+    this.loadingContent,
     this.semanticLabel,
   }) : label = null,
+       prefixIcon = null,
+       suffixIcon = null,
        expanded = false;
 
   bool get _isEnabled => !isDisabled && !isLoading && onPressed != null;
-  bool get _isIconOnly => label == null && icon != null;
+  bool get _isIconOnly =>
+      label == null &&
+      (icon != null || prefixIcon != null || suffixIcon != null) &&
+      (prefixIcon == null || suffixIcon == null);
 
   @override
   Widget build(BuildContext context) {
@@ -110,16 +116,22 @@ class FoundryButton extends StatelessWidget {
     final radius = theme.radius;
     final motion = theme.motion;
 
-    final sizeConfig = _resolveSizeConfig(spacing, typography);
+    final sizeConfig = ButtonSizeConfig.forSize(size, spacing, typography);
 
     Widget button = FoundryInteractive(
       enabled: _isEnabled,
       onTap: _isEnabled ? () => _handleTap() : null,
       builder: (isHovered, isFocused, isPressed) {
-        final effectiveHovered = (isLoading && loadingMode == FoundryButtonLoadingMode.compact) ? false : isHovered;
-        final effectivePressed = (isLoading && loadingMode == FoundryButtonLoadingMode.compact) ? false : isPressed;
+        final effectiveHovered = isLoading ? false : isHovered;
+        final effectivePressed = isLoading ? false : isPressed;
 
-        final buttonColors = _resolveColors(colors, effectiveHovered, effectivePressed);
+        final buttonColors = ButtonColorResolver.resolve(
+          variant: variant,
+          colors: colors,
+          isEnabled: _isEnabled,
+          isHovered: effectiveHovered,
+          isPressed: effectivePressed,
+        );
 
         final shouldAnimateColor =
             variant != FoundryButtonVariant.ghost &&
@@ -148,18 +160,16 @@ class FoundryButton extends StatelessWidget {
           ),
         );
 
-        if (loadingMode == FoundryButtonLoadingMode.compact) {
-          return AnimatedSize(
-            duration: motion.normal,
-            curve: motion.easeInOut,
-            alignment: Alignment.center,
-            child: container,
-          );
-        }
-
         return container;
       },
     );
+
+    if (minWidth != null) {
+      button = ConstrainedBox(
+        constraints: BoxConstraints(minWidth: minWidth!),
+        child: button,
+      );
+    }
 
     button = Semantics(button: true, enabled: _isEnabled, label: semanticLabel ?? tooltip ?? label, child: button);
 
@@ -177,199 +187,56 @@ class FoundryButton extends StatelessWidget {
     onPressed?.call();
   }
 
-  _SizeConfig _resolveSizeConfig(SemanticSpacing spacing, SemanticTypography typography) {
-    switch (size) {
-      case FoundryButtonSize.small:
-        return _SizeConfig(
-          padding: FInsets.symmetric(horizontal: spacing.sm, vertical: spacing.xs),
-          fontSize: typography.bodySmall,
-          iconSize: FIconSize.sm,
-          iconPadding: spacing.xs,
-        );
-      case FoundryButtonSize.medium:
-        return _SizeConfig(
-          padding: FInsets.symmetric(horizontal: spacing.md, vertical: spacing.sm),
-          fontSize: typography.body,
-          iconSize: FIconSize.md,
-          iconPadding: spacing.sm,
-        );
-      case FoundryButtonSize.large:
-        return _SizeConfig(
-          padding: FInsets.symmetric(horizontal: spacing.lg, vertical: spacing.md),
-          fontSize: typography.headingSmall,
-          iconSize: FIconSize.lg,
-          iconPadding: spacing.md,
-        );
-    }
-  }
-
-  _ButtonColors _resolveColors(SemanticColors colors, bool isHovered, bool isPressed) {
-    if (!_isEnabled) {
-      return _resolveDisabledColors(colors);
-    }
-
-    switch (variant) {
-      case FoundryButtonVariant.primary:
-        return _ButtonColors(
-          background: isPressed
-              ? colors.accent.active
-              : isHovered
-              ? colors.accent.hover
-              : colors.button.primary.bg,
-          foreground: colors.button.primary.fg,
-          border: colors.button.primary.border,
-        );
-      case FoundryButtonVariant.secondary:
-        return _ButtonColors(
-          background: isPressed
-              ? colors.bg.inverted.withValues(alpha: colors.opacity.pressedDark)
-              : isHovered
-              ? colors.bg.inverted.withValues(alpha: colors.opacity.hoverDark)
-              : colors.button.secondary.bg,
-          foreground: colors.button.secondary.fg,
-          border: colors.button.secondary.border,
-        );
-      case FoundryButtonVariant.outline:
-        return _ButtonColors(
-          background: isPressed
-              ? colors.state.active.bg!
-              : isHovered
-              ? colors.state.hover.bg!
-              : colors.bg.canvas,
-          foreground: colors.fg.primary,
-          border: isPressed || isHovered ? colors.border.strong : colors.border.base,
-        );
-      case FoundryButtonVariant.ghost:
-        final bg = isPressed
-            ? colors.state.active.bg!
-            : isHovered
-            ? colors.state.hover.bg!
-            : colors.bg.transparent;
-        return _ButtonColors(background: bg, foreground: colors.fg.primary, border: colors.bg.transparent);
-      case FoundryButtonVariant.destructive:
-        return _ButtonColors(
-          background: isPressed
-              ? colors.status.negative.main.withValues(alpha: colors.opacity.pressedDark)
-              : isHovered
-              ? colors.status.negative.main
-              : colors.status.negative.bg,
-          foreground: isPressed || isHovered ? colors.fg.inverted : colors.status.negative.fg,
-          border: colors.status.negative.border,
-        );
-    }
-  }
-
-  _ButtonColors _resolveDisabledColors(SemanticColors colors) {
-    switch (variant) {
-      case FoundryButtonVariant.ghost:
-        return _ButtonColors(
-          background: colors.bg.transparent,
-          foreground: colors.state.disabled.fg!,
-          border: colors.bg.transparent,
-        );
-      case FoundryButtonVariant.outline:
-        return _ButtonColors(
-          background: colors.bg.canvas,
-          foreground: colors.state.disabled.fg!,
-          border: colors.state.disabled.border!,
-        );
-      default:
-        return _ButtonColors(
-          background: colors.state.disabled.bg!,
-          foreground: colors.state.disabled.fg!,
-          border: colors.state.disabled.border ?? colors.border.muted,
-        );
-    }
-  }
-
-  List<Widget> _buildContent(Color foreground, _SizeConfig sizeConfig) {
-    if (loadingMode == FoundryButtonLoadingMode.compact) {
-      return [
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: ScaleTransition(scale: animation, child: child),
-            );
-          },
-          child: isLoading
-              ? Center(
-                  key: const ValueKey('loading'),
-                  child: SizedBox(
-                    width: sizeConfig.iconSize,
-                    height: sizeConfig.iconSize,
-                    child: CircularProgressIndicator(
-                      strokeWidth: FBorderWidth.medium,
-                      valueColor: AlwaysStoppedAnimation<Color>(foreground),
-                    ),
-                  ),
-                )
-              : Row(
-                  key: const ValueKey('content'),
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon != null) ...[
-                      IconTheme(
-                        data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
-                        child: icon!,
-                      ),
-                      if (label != null) FoundryGap.sm(),
-                    ],
-                    if (label != null)
-                      Flexible(
-                        child: Text(
-                          label!,
-                          style: TextStyle(
-                            color: foreground,
-                            fontSize: sizeConfig.fontSize,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                  ],
-                ),
-        ),
-      ];
-    }
-
+  List<Widget> _buildContent(Color foreground, ButtonSizeConfiguration sizeConfig) {
     final widgets = <Widget>[];
 
     if (isLoading) {
       widgets.add(
-        SizedBox(
-          width: sizeConfig.iconSize,
-          height: sizeConfig.iconSize,
-          child: CircularProgressIndicator(
-            strokeWidth: FBorderWidth.medium,
-            valueColor: AlwaysStoppedAnimation<Color>(foreground),
-          ),
-        ),
+        loadingContent ??
+            SizedBox(
+              width: sizeConfig.iconSize,
+              height: sizeConfig.iconSize,
+              child: CircularProgressIndicator(
+                strokeWidth: FBorderWidth.medium,
+                valueColor: AlwaysStoppedAnimation<Color>(foreground),
+              ),
+            ),
       );
-      if (label != null) widgets.add(FoundryGap.sm());
-    } else if (icon != null) {
-      widgets.add(
-        IconTheme(
-          data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
-          child: icon!,
-        ),
-      );
-      if (label != null) widgets.add(FoundryGap.sm());
-    }
+    } else {
+      final effectivePrefixIcon = icon ?? prefixIcon;
 
-    if (label != null) {
-      widgets.add(
-        Flexible(
-          child: Text(
-            label!,
-            style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+      if (effectivePrefixIcon != null) {
+        widgets.add(
+          IconTheme(
+            data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
+            child: effectivePrefixIcon,
           ),
-        ),
-      );
+        );
+        if (label != null || suffixIcon != null) widgets.add(FoundryGap.sm());
+      }
+
+      if (label != null) {
+        widgets.add(
+          Flexible(
+            child: Text(
+              label!,
+              style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        );
+        if (suffixIcon != null) widgets.add(FoundryGap.sm());
+      }
+
+      if (suffixIcon != null) {
+        widgets.add(
+          IconTheme(
+            data: IconThemeData(color: foreground, size: sizeConfig.iconSize),
+            child: suffixIcon!,
+          ),
+        );
+      }
     }
 
     return widgets;
