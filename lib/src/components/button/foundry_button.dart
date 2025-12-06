@@ -4,6 +4,7 @@ import 'package:foundry_ds/src/theme/theme.dart';
 import 'package:foundry_ds/src/foundations/foundations.dart';
 import 'package:foundry_ds/src/utils/utils.dart';
 import 'package:foundry_ds/src/components/components.dart';
+import 'package:foundry_ds/src/semantic/semantic.dart';
 
 import '_button_colors.dart';
 import '_button_sizes.dart';
@@ -128,7 +129,7 @@ class FoundryButton extends StatelessWidget {
         final buttonColors = ButtonColorResolver.resolve(
           variant: variant,
           colors: colors,
-          isEnabled: _isEnabled,
+          isEnabled: !isDisabled,
           isHovered: effectiveHovered,
           isPressed: effectivePressed,
         );
@@ -156,7 +157,7 @@ class FoundryButton extends StatelessWidget {
           child: Row(
             mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: _buildContent(buttonColors.foreground, sizeConfig),
+            children: _buildContent(buttonColors.foreground, sizeConfig, typography),
           ),
         );
 
@@ -187,7 +188,7 @@ class FoundryButton extends StatelessWidget {
     onPressed?.call();
   }
 
-  List<Widget> _buildContent(Color foreground, ButtonSizeConfiguration sizeConfig) {
+  List<Widget> _buildContent(Color foreground, ButtonSizeConfiguration sizeConfig, SemanticTypography typography) {
     final widgets = <Widget>[];
 
     if (isLoading) {
@@ -220,7 +221,12 @@ class FoundryButton extends StatelessWidget {
           Flexible(
             child: Text(
               label!,
-              style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: foreground,
+                fontSize: sizeConfig.fontSize,
+                fontWeight: typography.medium,
+                height: typography.tight,
+              ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
