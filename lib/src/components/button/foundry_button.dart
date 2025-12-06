@@ -98,28 +98,26 @@ class FoundryButton extends StatelessWidget {
     Widget button = FoundryInteractive(
       enabled: _isEnabled,
       onTap: _isEnabled ? () => _handleTap() : null,
+      onLongPress: _isEnabled ? onLongPress : null,
       builder: (isHovered, isFocused, isPressed) {
         final buttonColors = _resolveColors(colors, isHovered, isPressed);
 
-        return GestureDetector(
-          onLongPress: _isEnabled ? onLongPress : null,
-          child: AnimatedContainer(
-            duration: motion.fast,
-            curve: motion.easeInOut,
-            padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
-            decoration: BoxDecoration(
-              color: buttonColors.background,
-              border: Border.all(
-                color: isFocused ? colors.border.focus : buttonColors.border,
-                width: isFocused ? FBorderWidth.medium : FBorderWidth.hairline,
-              ),
-              borderRadius: BorderRadius.circular(radius.md),
+        return AnimatedContainer(
+          duration: motion.fast,
+          curve: motion.easeInOut,
+          padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
+          decoration: BoxDecoration(
+            color: buttonColors.background,
+            border: Border.all(
+              color: isFocused ? colors.border.focus : buttonColors.border,
+              width: isFocused ? FBorderWidth.medium : FBorderWidth.hairline,
             ),
-            child: Row(
-              mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: _buildContent(buttonColors.foreground, sizeConfig),
-            ),
+            borderRadius: BorderRadius.circular(radius.md),
+          ),
+          child: Row(
+            mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _buildContent(buttonColors.foreground, sizeConfig),
           ),
         );
       },

@@ -57,8 +57,16 @@ void main() {
           buildTestWidget(FoundryButton.icon(icon: const Icon(Icons.add), onPressed: () {}, tooltip: 'Add item')),
         );
 
-        // Tooltip should be in the widget tree
         expect(find.byType(Tooltip), findsOneWidget);
+      });
+
+      testWidgets('icon button defaults to ghost variant', (tester) async {
+        await tester.pumpWidget(
+          buildTestWidget(FoundryButton.icon(icon: const Icon(Icons.close), onPressed: () {}, tooltip: 'Close')),
+        );
+
+        final button = tester.widget<FoundryButton>(find.byType(FoundryButton));
+        expect(button.variant, equals(FoundryButtonVariant.ghost));
       });
     });
 
@@ -119,7 +127,6 @@ void main() {
       testWidgets('wraps button with Semantics widget', (tester) async {
         await tester.pumpWidget(buildTestWidget(FoundryButton(onPressed: () {}, label: 'Submit')));
 
-        // Verify Semantics widget is in the tree
         expect(find.byType(Semantics), findsWidgets);
       });
 
@@ -128,7 +135,6 @@ void main() {
           buildTestWidget(FoundryButton(onPressed: () {}, label: 'OK', semanticLabel: 'Confirm action')),
         );
 
-        // Find the Semantics widget with our custom label
         expect(
           find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.label == 'Confirm action'),
           findsOneWidget,
@@ -138,7 +144,6 @@ void main() {
       testWidgets('includes button property in Semantics', (tester) async {
         await tester.pumpWidget(buildTestWidget(FoundryButton(onPressed: () {}, label: 'Test')));
 
-        // Find Semantics with button property
         expect(
           find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.button == true),
           findsOneWidget,
@@ -147,70 +152,24 @@ void main() {
     });
 
     group('variants', () {
-      testWidgets('renders primary variant', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Primary', variant: FoundryButtonVariant.primary)),
-        );
+      testWidgets('renders all variants correctly', (tester) async {
+        for (final variant in FoundryButtonVariant.values) {
+          await tester.pumpWidget(
+            buildTestWidget(FoundryButton(onPressed: () {}, label: variant.name, variant: variant)),
+          );
 
-        expect(find.text('Primary'), findsOneWidget);
-      });
-
-      testWidgets('renders secondary variant', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Secondary', variant: FoundryButtonVariant.secondary)),
-        );
-
-        expect(find.text('Secondary'), findsOneWidget);
-      });
-
-      testWidgets('renders outline variant', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Outline', variant: FoundryButtonVariant.outline)),
-        );
-
-        expect(find.text('Outline'), findsOneWidget);
-      });
-
-      testWidgets('renders ghost variant', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Ghost', variant: FoundryButtonVariant.ghost)),
-        );
-
-        expect(find.text('Ghost'), findsOneWidget);
-      });
-
-      testWidgets('renders destructive variant', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Delete', variant: FoundryButtonVariant.destructive)),
-        );
-
-        expect(find.text('Delete'), findsOneWidget);
+          expect(find.text(variant.name), findsOneWidget);
+        }
       });
     });
 
     group('sizes', () {
-      testWidgets('renders small size', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Small', size: FoundryButtonSize.small)),
-        );
+      testWidgets('renders all sizes correctly', (tester) async {
+        for (final size in FoundryButtonSize.values) {
+          await tester.pumpWidget(buildTestWidget(FoundryButton(onPressed: () {}, label: size.name, size: size)));
 
-        expect(find.text('Small'), findsOneWidget);
-      });
-
-      testWidgets('renders medium size', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Medium', size: FoundryButtonSize.medium)),
-        );
-
-        expect(find.text('Medium'), findsOneWidget);
-      });
-
-      testWidgets('renders large size', (tester) async {
-        await tester.pumpWidget(
-          buildTestWidget(FoundryButton(onPressed: () {}, label: 'Large', size: FoundryButtonSize.large)),
-        );
-
-        expect(find.text('Large'), findsOneWidget);
+          expect(find.text(size.name), findsOneWidget);
+        }
       });
     });
 

@@ -16,6 +16,7 @@ import 'package:foundry_ds/src/foundations/foundations.dart';
 class FoundryInteractive extends StatefulWidget {
   final Widget Function(bool isHovered, bool isFocused, bool isPressed) builder;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool enabled;
   final MouseCursor? cursor;
   final bool canRequestFocus;
@@ -24,6 +25,7 @@ class FoundryInteractive extends StatefulWidget {
     super.key,
     required this.builder,
     this.onTap,
+    this.onLongPress,
     this.enabled = true,
     this.cursor,
     this.canRequestFocus = true,
@@ -74,6 +76,12 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
     }
   }
 
+  void _handleLongPress() {
+    if (widget.enabled && widget.onLongPress != null) {
+      widget.onLongPress!();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final effectiveHovered = widget.enabled && _isHovered;
@@ -89,6 +97,7 @@ class _FoundryInteractiveState extends State<FoundryInteractive> {
         onExit: (_) => _handleHoverChange(false),
         child: GestureDetector(
           onTap: widget.enabled ? _handleTap : null,
+          onLongPress: widget.enabled ? _handleLongPress : null,
           onTapDown: widget.enabled ? _handleTapDown : null,
           onTapUp: widget.enabled ? _handleTapUp : null,
           onTapCancel: widget.enabled ? _handleTapCancel : null,
