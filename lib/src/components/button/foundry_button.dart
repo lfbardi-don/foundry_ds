@@ -46,6 +46,7 @@ class FoundryButton extends StatelessWidget {
   final bool isDisabled;
   final bool expanded;
   final bool enableHaptics;
+  final bool animateLoading;
   final String? semanticLabel;
   final String? tooltip;
 
@@ -60,6 +61,7 @@ class FoundryButton extends StatelessWidget {
     this.isDisabled = false,
     this.expanded = false,
     this.enableHaptics = true,
+    this.animateLoading = false,
     this.semanticLabel,
     this.tooltip,
   }) : assert(label != null || icon != null, 'FoundryButton requires either a label or an icon.');
@@ -74,6 +76,7 @@ class FoundryButton extends StatelessWidget {
     this.isLoading = false,
     this.isDisabled = false,
     this.enableHaptics = true,
+    this.animateLoading = false,
     this.semanticLabel,
   }) : label = null,
        expanded = false;
@@ -208,12 +211,6 @@ class FoundryButton extends StatelessWidget {
             : isHovered
             ? colors.state.hover.bg!
             : colors.bg.transparent;
-        final state = isPressed
-            ? 'PRESSED'
-            : isHovered
-            ? 'HOVERED'
-            : 'DEFAULT';
-        print('[GHOST] state=$state, color=$bg');
         return _ButtonColors(background: bg, foreground: colors.fg.primary, border: colors.bg.transparent);
       case FoundryButtonVariant.destructive:
         return _ButtonColors(
@@ -255,17 +252,21 @@ class FoundryButton extends StatelessWidget {
     final widgets = <Widget>[];
 
     if (isLoading) {
-      widgets.add(
-        SizedBox(
-          width: sizeConfig.iconSize,
-          height: sizeConfig.iconSize,
-          child: CircularProgressIndicator(
-            strokeWidth: FBorderWidth.medium,
-            valueColor: AlwaysStoppedAnimation<Color>(foreground),
-          ),
+      final spinner = SizedBox(
+        width: sizeConfig.iconSize,
+        height: sizeConfig.iconSize,
+        child: CircularProgressIndicator(
+          strokeWidth: FBorderWidth.medium,
+          valueColor: AlwaysStoppedAnimation<Color>(foreground),
         ),
       );
-      if (label != null) widgets.add(FoundryGap.sm());
+
+      if (animateLoading) {
+        widgets.add(AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: spinner));
+      } else {
+        widgets.add(spinner);
+        if (label != null) widgets.add(FoundryGap.sm());
+      }
     } else if (icon != null) {
       widgets.add(
         IconTheme(
@@ -276,13 +277,19 @@ class FoundryButton extends StatelessWidget {
       if (label != null) widgets.add(FoundryGap.sm());
     }
 
-    if (label != null) {
-      widgets.add(
-        Text(
-          label!,
-          style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
-        ),
+    if (label != null && !(isLoading && animateLoading)) {
+      final text = Text(
+        label!,
+        style: TextStyle(color: foreground, fontSize: sizeConfig.fontSize, fontWeight: FontWeight.w500),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
       );
+
+      if (animateLoading) {
+        widgets.add(AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: text));
+      } else {
+        widgets.add(text);
+      }
     }
 
     return widgets;
