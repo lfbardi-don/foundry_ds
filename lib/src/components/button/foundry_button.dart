@@ -98,9 +98,9 @@ class FoundryButton extends StatelessWidget {
       builder: (isHovered, isFocused, isPressed) {
         final buttonColors = _resolveColors(colors, isHovered, isPressed);
 
-        return AnimatedContainer(
-          duration: motion.fast,
-          curve: motion.easeInOut,
+        return Container(
+          // duration: motion.fast,  // DISABLED FOR TESTING
+          // curve: motion.easeInOut,  // DISABLED FOR TESTING
           padding: _isIconOnly ? FInsets.all(sizeConfig.iconPadding) : sizeConfig.padding,
           decoration: BoxDecoration(
             color: buttonColors.background,
