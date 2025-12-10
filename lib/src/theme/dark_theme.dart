@@ -68,7 +68,6 @@ class FoundryDarkTheme implements FoundryThemeData {
         status: StatusColors(
           positive: StatusColor(
             bg: FColors.green950,
-
             fg: FColors.green500,
             border: FColors.green600,
             main: FColors.green500,
@@ -76,7 +75,6 @@ class FoundryDarkTheme implements FoundryThemeData {
           negative: StatusColor(bg: FColors.red950, fg: FColors.red500, border: FColors.red600, main: FColors.red500),
           warning: StatusColor(
             bg: FColors.amber950,
-
             fg: FColors.amber500,
             border: FColors.amber600,
             main: FColors.amber500,
@@ -108,7 +106,7 @@ class FoundryDarkTheme implements FoundryThemeData {
           secondary: ComponentColors(bg: FColors.white, fg: FColors.zinc950, border: FColors.transparent),
         ),
         input: InputColors(bg: FColors.zinc950, border: FColors.zinc700, placeholder: FColors.zinc500),
-        card: CardColors(bg: FColors.zinc900, border: FColors.zinc800),
+        card: CardColors(bg: FColors.zinc800, border: FColors.zinc700),
         navbar: NavbarColors(bg: FColors.zinc950Op80, border: FColors.zinc800),
       ),
       typography = const SemanticTypography(
@@ -154,11 +152,11 @@ class FoundryDarkTheme implements FoundryThemeData {
       ),
       shadows = const SemanticShadows(
         none: FShadow.none,
-        xs: FShadow.xs,
-        sm: FShadow.sm,
-        md: FShadow.md,
-        lg: FShadow.lg,
-        xl: FShadow.xl,
+        xs: FShadow.darkXs,
+        sm: FShadow.darkSm,
+        md: FShadow.darkMd,
+        lg: FShadow.darkLg,
+        xl: FShadow.darkXl,
       ),
       layout = const SemanticLayout(
         sm: FLayout.sm,
