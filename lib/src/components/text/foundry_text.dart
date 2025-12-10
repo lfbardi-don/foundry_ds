@@ -15,6 +15,11 @@ enum FoundryTextVariant {
 }
 
 /// A text widget with semantic typography variants.
+///
+/// When [inherit] is `true`, the text will inherit styling (color, fontSize,
+/// fontWeight, height) from its parent [DefaultTextStyle]. This is useful
+/// when using [FoundryText] inside components like [FoundryButton] that
+/// provide their own text styling via [DefaultTextStyle].
 class FoundryText extends StatelessWidget {
   final String data;
   final FoundryTextVariant variant;
@@ -24,6 +29,7 @@ class FoundryText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final bool isMono;
+  final bool inherit;
 
   const FoundryText(
     this.data, {
@@ -35,6 +41,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   });
 
   const FoundryText.displayLarge(
@@ -46,6 +53,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.displayLarge;
 
   const FoundryText.display(
@@ -57,6 +65,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.display;
 
   const FoundryText.headingLarge(
@@ -68,6 +77,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.headingLarge;
 
   const FoundryText.heading(
@@ -79,6 +89,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.heading;
 
   const FoundryText.headingSmall(
@@ -90,6 +101,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.headingSmall;
 
   const FoundryText.subheading(
@@ -101,6 +113,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.subheading;
 
   const FoundryText.body(
@@ -112,6 +125,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.body;
 
   const FoundryText.bodySmall(
@@ -123,6 +137,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.bodySmall;
 
   const FoundryText.caption(
@@ -134,6 +149,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
+    this.inherit = false,
   }) : variant = FoundryTextVariant.caption;
 
   @override
@@ -141,6 +157,7 @@ class FoundryText extends StatelessWidget {
     final theme = FoundryTheme.of(context);
     final typography = theme.typography;
     final colors = theme.colors;
+    final defaultStyle = DefaultTextStyle.of(context).style;
 
     double fontSize;
     FontWeight defaultWeight;
@@ -194,6 +211,11 @@ class FoundryText extends StatelessWidget {
         break;
     }
 
+    final effectiveColor = color ?? (inherit ? defaultStyle.color : colors.fg.primary);
+    final effectiveFontSize = inherit ? defaultStyle.fontSize ?? fontSize : fontSize;
+    final effectiveWeight = weight ?? (inherit ? defaultStyle.fontWeight ?? defaultWeight : defaultWeight);
+    final effectiveHeight = inherit ? defaultStyle.height ?? lineHeight : lineHeight;
+
     return Text(
       data,
       textAlign: textAlign,
@@ -201,10 +223,10 @@ class FoundryText extends StatelessWidget {
       overflow: overflow,
       style: TextStyle(
         fontFamily: isMono ? typography.mono : typography.primary,
-        fontSize: fontSize,
-        fontWeight: weight ?? defaultWeight,
-        height: lineHeight,
-        color: color ?? colors.fg.primary,
+        fontSize: effectiveFontSize,
+        fontWeight: effectiveWeight,
+        height: effectiveHeight,
+        color: effectiveColor,
       ),
     );
   }
