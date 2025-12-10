@@ -22,6 +22,7 @@ class FColors {
   static const Color blackOp40 = Color(0x66000000);
   static const Color blackOp60 = Color(0x99000000);
   static const Color whiteOp80 = Color(0xCCFFFFFF);
+  static const Color zinc900Op80 = Color(0xCC18181B);
   static const Color zinc950Op80 = Color(0xCC09090B);
 
   static const Color brandPrimary = Color(0xFF10A37F);

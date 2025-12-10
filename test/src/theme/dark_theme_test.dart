@@ -7,7 +7,7 @@ void main() {
     test('themeData returns valid data', () {
       final theme = FoundryDarkTheme();
 
-      expect(theme.colors.bg.canvas, FColors.zinc950);
+      expect(theme.colors.bg.canvas, FColors.zinc900);
       expect(theme.colors.fg.primary, FColors.white);
       expect(theme.colors.button.primary.bg, FColors.brandPrimary);
       expect(theme.colors.button.primary.fg, FColors.brandWhite);
