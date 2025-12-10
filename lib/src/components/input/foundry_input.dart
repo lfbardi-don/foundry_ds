@@ -119,6 +119,7 @@ class _FoundryInputState extends State<FoundryInput> {
     final spacing = theme.spacing;
     final radius = theme.radius;
     final motion = theme.motion;
+    final shadows = theme.shadows;
 
     final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
     final hasHelperText = widget.helperText != null && widget.helperText!.isNotEmpty;
@@ -139,9 +140,9 @@ class _FoundryInputState extends State<FoundryInput> {
         ? colors.state.hover.bg
         : colors.input.bg;
 
-    final focusShadow = _isFocused && widget.enabled && !hasError ? FShadow.sm : FShadow.none;
+    final focusShadow = _isFocused && widget.enabled && !hasError ? shadows.sm : shadows.none;
 
-    final errorShadow = _isFocused && widget.enabled && hasError ? FShadow.xs : <BoxShadow>[];
+    final errorShadow = _isFocused && widget.enabled && hasError ? shadows.xs : <BoxShadow>[];
 
     final effectiveShadow = hasError ? errorShadow : focusShadow;
 

@@ -120,6 +120,7 @@ class _FoundrySliderState extends State<FoundrySlider> {
     final colors = theme.colors;
     final radius = theme.radius;
     final motion = theme.motion;
+    final shadows = theme.shadows;
 
     final trackColor = _isEnabled ? colors.bg.emphasis : colors.state.disabled.bg!;
     final activeColor = _isEnabled
@@ -129,7 +130,7 @@ class _FoundrySliderState extends State<FoundrySlider> {
 
     final thumbScale = _isDragging ? 1.15 : (_isHovered ? 1.1 : 1.0);
 
-    final thumbShadow = _isDragging ? FShadow.md : (_isHovered || _isFocused ? FShadow.sm : FShadow.thumb);
+    final thumbShadow = _isDragging ? shadows.md : (_isHovered || _isFocused ? shadows.sm : shadows.sm);
 
     final thumbBorderColor = _isFocused ? colors.border.focus : (_isDragging ? colors.accent.base : colors.border.base);
     final thumbBorderWidth = _isFocused || _isDragging ? FBorderWidth.medium : FBorderWidth.hairline;

@@ -111,6 +111,7 @@ class _FoundryRadioState<T> extends State<FoundryRadio<T>> with SingleTickerProv
     final theme = FoundryTheme.of(context);
     final colors = theme.colors;
     final motion = theme.motion;
+    final shadows = theme.shadows;
 
     final ringColor = _isEnabled
         ? (_isSelected
@@ -124,7 +125,7 @@ class _FoundryRadioState<T> extends State<FoundryRadio<T>> with SingleTickerProv
 
     final scale = _isPressed ? 0.9 : 1.0;
 
-    final shadow = _isEnabled && (_isHovered || _isFocused) && !_isPressed ? FShadow.xs : FShadow.none;
+    final shadow = _isEnabled && (_isHovered || _isFocused) && !_isPressed ? shadows.xs : shadows.none;
 
     return Semantics(
       selected: _isSelected,

@@ -68,6 +68,7 @@ class _FoundrySwitchState extends State<FoundrySwitch> {
     final colors = theme.colors;
     final motion = theme.motion;
     final radius = theme.radius;
+    final shadows = theme.shadows;
 
     final trackColor = widget.value
         ? (_isEnabled ? colors.accent.base : colors.accent.base.withValues(alpha: 0.5))
@@ -76,7 +77,7 @@ class _FoundrySwitchState extends State<FoundrySwitch> {
     final thumbColor = _isEnabled ? colors.bg.canvas : colors.fg.muted;
     final thumbScale = _isPressed ? 0.92 : (_isHovered ? 1.05 : 1.0);
 
-    final trackShadow = _isEnabled && (_isHovered || _isFocused) && !_isPressed ? FShadow.sm : FShadow.none;
+    final trackShadow = _isEnabled && (_isHovered || _isFocused) && !_isPressed ? shadows.sm : shadows.none;
 
     return Semantics(
       toggled: widget.value,
@@ -116,7 +117,7 @@ class _FoundrySwitchState extends State<FoundrySwitch> {
                     width: FControlSize.switchThumb,
                     height: FControlSize.switchThumb,
                     margin: const EdgeInsets.all(FControlSize.switchThumbPadding),
-                    decoration: BoxDecoration(color: thumbColor, shape: BoxShape.circle, boxShadow: FShadow.thumb),
+                    decoration: BoxDecoration(color: thumbColor, shape: BoxShape.circle, boxShadow: shadows.sm),
                   ),
                 ),
               ),

@@ -99,6 +99,7 @@ class _FoundryCheckboxState extends State<FoundryCheckbox> {
     final colors = theme.colors;
     final radius = theme.radius;
     final motion = theme.motion;
+    final shadows = theme.shadows;
 
     final isCheckedOrIndeterminate = _state != FoundryCheckboxState.unchecked;
 
@@ -120,7 +121,7 @@ class _FoundryCheckboxState extends State<FoundryCheckbox> {
 
     final scale = _isPressed ? 0.92 : 1.0;
 
-    final shadow = _isEnabled && (_isHovered || _isFocused) && !_isPressed ? FShadow.xs : FShadow.none;
+    final shadow = _isEnabled && (_isHovered || _isFocused) && !_isPressed ? shadows.xs : shadows.none;
 
     return Semantics(
       checked: _state == FoundryCheckboxState.checked,

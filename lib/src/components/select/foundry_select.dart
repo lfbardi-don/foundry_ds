@@ -122,6 +122,7 @@ class _FoundrySelectState<T> extends State<FoundrySelect<T>> {
     final radius = theme.radius;
     final spacing = theme.spacing;
     final motion = theme.motion;
+    final shadows = theme.shadows;
 
     final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
 
@@ -145,8 +146,8 @@ class _FoundrySelectState<T> extends State<FoundrySelect<T>> {
         ? (_isEnabled ? colors.fg.primary : colors.state.disabled.fg!)
         : colors.input.placeholder;
 
-    final focusShadow = _isOpen && _isEnabled && !hasError ? FShadow.sm : FShadow.none;
-    final errorShadow = _isOpen && _isEnabled && hasError ? FShadow.xs : <BoxShadow>[];
+    final focusShadow = _isOpen && _isEnabled && !hasError ? shadows.sm : shadows.none;
+    final errorShadow = _isOpen && _isEnabled && hasError ? shadows.xs : <BoxShadow>[];
     final effectiveShadow = hasError ? errorShadow : focusShadow;
 
     return Column(
