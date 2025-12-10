@@ -28,8 +28,8 @@ class FoundryDarkTheme implements FoundryThemeData {
     : colors = const SemanticColors(
         bg: BackgroundColors(
           canvas: FColors.zinc950,
-          muted: FColors.zinc900,
-          emphasis: FColors.zinc800,
+          muted: FColors.zinc800,
+          emphasis: FColors.zinc700,
           inverted: FColors.white,
           transparent: FColors.transparent,
           positive: FColors.green950,
@@ -93,8 +93,8 @@ class FoundryDarkTheme implements FoundryThemeData {
           pressedDark: 0.7,
         ),
         state: StateColors(
-          hover: StateColor(bg: FColors.zinc800, fg: FColors.white),
-          active: StateColor(bg: FColors.zinc700, fg: FColors.white),
+          hover: StateColor(bg: FColors.zinc700, fg: FColors.white),
+          active: StateColor(bg: FColors.zinc600, fg: FColors.white),
           disabled: StateColor(bg: FColors.zinc900, fg: FColors.zinc600, border: FColors.zinc800),
         ),
         layout: LayoutColors(
