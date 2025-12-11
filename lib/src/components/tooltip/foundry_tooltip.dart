@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:foundry_ds/src/theme/theme.dart';
 import 'package:foundry_ds/src/foundations/foundations.dart';
 import 'package:foundry_ds/src/components/components.dart';
@@ -82,10 +82,7 @@ class _FoundryTooltipState extends State<FoundryTooltip> with SingleTickerProvid
     return MouseRegion(
       onEnter: (_) => _showTooltip(),
       onExit: (_) => _hideTooltip(),
-      child: GestureDetector(
-        onLongPress: _showTooltip, // Keep for mobile
-        child: widget.child,
-      ),
+      child: GestureDetector(onLongPress: _showTooltip, child: widget.child),
     );
   }
 }
@@ -109,15 +106,18 @@ class _TooltipOverlay extends StatelessWidget {
       delegate: _TooltipPositionDelegate(targetRect: targetRect, padding: MediaQuery.paddingOf(context)),
       child: FadeTransition(
         opacity: animation,
-        child: Container(
-          constraints: BoxConstraints(maxWidth: FControlSize.tooltipMaxWidth),
-          padding: FInsets.symmetric(horizontal: spacing.sm, vertical: spacing.xs),
-          decoration: BoxDecoration(
-            color: colors.bg.inverted,
-            borderRadius: BorderRadius.circular(radius.sm),
-            boxShadow: shadows.md,
+        child: Material(
+          type: MaterialType.transparency,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: FControlSize.tooltipMaxWidth),
+            padding: FInsets.symmetric(horizontal: spacing.sm, vertical: spacing.xs),
+            decoration: BoxDecoration(
+              color: colors.bg.inverted,
+              borderRadius: BorderRadius.circular(radius.sm),
+              boxShadow: shadows.md,
+            ),
+            child: FoundryText.bodySmall(message, color: colors.fg.inverted, textAlign: TextAlign.center),
           ),
-          child: FoundryText.bodySmall(message, color: colors.fg.inverted, textAlign: TextAlign.center),
         ),
       ),
     );
