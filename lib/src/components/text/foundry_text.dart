@@ -16,10 +16,9 @@ enum FoundryTextVariant {
 
 /// A text widget with semantic typography variants.
 ///
-/// When [inherit] is `true`, the text will inherit styling (color, fontSize,
-/// fontWeight, height) from its parent [DefaultTextStyle]. This is useful
-/// when using [FoundryText] inside components like [FoundryButton] that
-/// provide their own text styling via [DefaultTextStyle].
+/// By default, [FoundryText] uses the Foundry Design System typography
+/// and colors directly. Use [FoundryText.inherit] for cases where you need
+/// vanilla text that inherits styling from parent [DefaultTextStyle].
 class FoundryText extends StatelessWidget {
   final String data;
   final FoundryTextVariant variant;
@@ -29,7 +28,7 @@ class FoundryText extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
   final bool isMono;
-  final bool inherit;
+  final bool _inherit;
 
   const FoundryText(
     this.data, {
@@ -41,8 +40,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  });
+  }) : _inherit = false;
 
   const FoundryText.displayLarge(
     this.data, {
@@ -53,8 +51,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.displayLarge;
+  }) : variant = FoundryTextVariant.displayLarge,
+       _inherit = false;
 
   const FoundryText.display(
     this.data, {
@@ -65,8 +63,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.display;
+  }) : variant = FoundryTextVariant.display,
+       _inherit = false;
 
   const FoundryText.headingLarge(
     this.data, {
@@ -77,8 +75,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.headingLarge;
+  }) : variant = FoundryTextVariant.headingLarge,
+       _inherit = false;
 
   const FoundryText.heading(
     this.data, {
@@ -89,8 +87,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.heading;
+  }) : variant = FoundryTextVariant.heading,
+       _inherit = false;
 
   const FoundryText.headingSmall(
     this.data, {
@@ -101,8 +99,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.headingSmall;
+  }) : variant = FoundryTextVariant.headingSmall,
+       _inherit = false;
 
   const FoundryText.subheading(
     this.data, {
@@ -113,8 +111,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.subheading;
+  }) : variant = FoundryTextVariant.subheading,
+       _inherit = false;
 
   const FoundryText.body(
     this.data, {
@@ -125,8 +123,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.body;
+  }) : variant = FoundryTextVariant.body,
+       _inherit = false;
 
   const FoundryText.bodySmall(
     this.data, {
@@ -137,8 +135,8 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.bodySmall;
+  }) : variant = FoundryTextVariant.bodySmall,
+       _inherit = false;
 
   const FoundryText.caption(
     this.data, {
@@ -149,15 +147,25 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = true,
-  }) : variant = FoundryTextVariant.caption;
+  }) : variant = FoundryTextVariant.caption,
+       _inherit = false;
+
+  const FoundryText.inherit(this.data, {super.key, this.textAlign, this.maxLines, this.overflow})
+    : variant = FoundryTextVariant.body,
+      color = null,
+      weight = null,
+      isMono = false,
+      _inherit = true;
 
   @override
   Widget build(BuildContext context) {
     final theme = FoundryTheme.of(context);
     final typography = theme.typography;
     final colors = theme.colors;
-    final defaultStyle = DefaultTextStyle.of(context).style;
+
+    if (_inherit) {
+      return Text(data, textAlign: textAlign, maxLines: maxLines, overflow: overflow);
+    }
 
     double fontSize;
     FontWeight defaultWeight;
@@ -211,11 +219,6 @@ class FoundryText extends StatelessWidget {
         break;
     }
 
-    final effectiveColor = color ?? (inherit ? defaultStyle.color : colors.fg.primary);
-    final effectiveFontSize = inherit ? defaultStyle.fontSize ?? fontSize : fontSize;
-    final effectiveWeight = weight ?? (inherit ? defaultStyle.fontWeight ?? defaultWeight : defaultWeight);
-    final effectiveHeight = inherit ? defaultStyle.height ?? lineHeight : lineHeight;
-
     return Text(
       data,
       textAlign: textAlign,
@@ -223,10 +226,10 @@ class FoundryText extends StatelessWidget {
       overflow: overflow,
       style: TextStyle(
         fontFamily: isMono ? typography.mono : typography.primary,
-        fontSize: effectiveFontSize,
-        fontWeight: effectiveWeight,
-        height: effectiveHeight,
-        color: effectiveColor,
+        fontSize: fontSize,
+        fontWeight: weight ?? defaultWeight,
+        height: lineHeight,
+        color: color ?? colors.fg.primary,
       ),
     );
   }
