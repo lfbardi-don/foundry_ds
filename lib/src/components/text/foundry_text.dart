@@ -41,7 +41,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   });
 
   const FoundryText.displayLarge(
@@ -53,7 +53,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.displayLarge;
 
   const FoundryText.display(
@@ -65,7 +65,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.display;
 
   const FoundryText.headingLarge(
@@ -77,7 +77,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.headingLarge;
 
   const FoundryText.heading(
@@ -89,7 +89,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.heading;
 
   const FoundryText.headingSmall(
@@ -101,7 +101,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.headingSmall;
 
   const FoundryText.subheading(
@@ -113,7 +113,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.subheading;
 
   const FoundryText.body(
@@ -125,7 +125,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.body;
 
   const FoundryText.bodySmall(
@@ -137,7 +137,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.bodySmall;
 
   const FoundryText.caption(
@@ -149,7 +149,7 @@ class FoundryText extends StatelessWidget {
     this.maxLines,
     this.overflow,
     this.isMono = false,
-    this.inherit = false,
+    this.inherit = true,
   }) : variant = FoundryTextVariant.caption;
 
   @override
